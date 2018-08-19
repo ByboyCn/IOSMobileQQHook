@@ -67,4 +67,37 @@ andCliPrivKeyLen:(int)prikeyLen
 }
 
 
+
+%end
+
+%hook WloginSdk_v2
+
+- (int)initECDHShareKey:(char *)out andCliPubKey:(char *)pubkey andCliPubKeyLen:(unsigned int *)pubkeyLen andCliPrivKey:(char *)prikey andCliPrivKeyLen:(unsigned int *)prikeyLen
+{
+	int r= %orig;
+
+	NSLog(@"iosqqhook:initECDHShareKey pubkey=%@ pubkeyLen=%u prikey=%@ prikeyLen=%u out=%@",
+	[NSString hexStringWithData:(unsigned char*)pubkey ofLength:(int)(*pubkeyLen)],
+	*pubkeyLen,
+	[NSString hexStringWithData:(unsigned char*)prikey ofLength:(int)(*prikeyLen)],
+	*prikeyLen,
+	[NSString hexStringWithData:(unsigned char*)out ofLength:16]
+	
+	);
+
+	return r;
+}
+
+%end
+
+
+
+%hook UserLoginProcess
+
+- (int)loginWithPasswd:(id)arg1 withNoPicSig:(id)arg2 andLoginFlag:(unsigned char)arg3
+{
+	%log;
+	return %orig;
+}
+
 %end
